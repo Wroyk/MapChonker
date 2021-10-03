@@ -2,15 +2,16 @@ tool
 extends Spatial
 
 export var x_tiles:int = 10
-export var y_tiles:int = 10 
+export var y_tiles:int = 10
 
 var chunk_positon:Vector2 = Vector2(0,0)
 var chunk_seed:int
 
 func gen_heightmap(offset:Vector2):
-	return sin(offset.x+offset.y)
+	var pos = chunk_positon * 10 + offset
+	return sin(pos.x+pos.y)
 
-		
+
 func init_mash():
 	var vertices:PoolVector3Array = PoolVector3Array()
 	var normals:PoolVector3Array = PoolVector3Array()
@@ -31,14 +32,14 @@ func init_mash():
 			vertices.push_back(v_10)
 			vertices.push_back(v_11)
 
-			#Normals falsch rum
-			normals.push_back((v_01-v_00).cross(v_10-v_00))
-			normals.push_back((v_00-v_10).cross(v_01-v_10))
-			normals.push_back((v_10-v_01).cross(v_00-v_01))
-			normals.push_back((v_11-v_01).cross(v_10-v_01))
-			normals.push_back((v_01-v_10).cross(v_11-v_10))
-			normals.push_back((v_10-v_11).cross(v_01-v_11))
-
+			var n1 = (v_01-v_00).cross(v_10-v_00)
+			var n2 = (v_11-v_01).cross(v_10-v_01)
+			normals.push_back(n1)
+			normals.push_back(n1)
+			normals.push_back(n1)
+			normals.push_back(n2)
+			normals.push_back(n2)
+			normals.push_back(n2)
 
 
 	# Initialize the ArrayMesh.

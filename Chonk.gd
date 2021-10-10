@@ -5,11 +5,12 @@ export var x_tiles:int = 10
 export var y_tiles:int = 10
 
 var chunk_positon:Vector2 = Vector2(0,0)
-var chunk_seed:int
+var height
+var simplexnoise
 
 func gen_heightmap(offset:Vector2):
 	var pos = chunk_positon * 10 + offset
-	return sin(pos.x+pos.y)
+	return height * simplexnoise.get_noise_2dv(pos)
 
 
 func init_mash():

@@ -17,6 +17,7 @@ func _ready():
 
 func _physics_process(delta: float) -> void:
 	unload_unneded_chunks()
+	update_lod()
 	load_chunks_around_center()
 
 func unload_unneded_chunks():
@@ -45,9 +46,32 @@ func load_chunk(coord: Vector2):
 	new_chunk.simplexnoise = simplexnoise
 	new_chunk.height = height
 	new_chunk.translate(Vector3(coord.x * chunk_size, 0, coord.y * chunk_size))
+	update_chunk_lod(new_chunk)
 	add_child(new_chunk)
 	active_chunks[coord] = new_chunk
 
 func unload_chunk(coord: Vector2):
 	remove_child(active_chunks[coord])
 	active_chunks.erase(coord)
+
+func update_lod():
+	
+	for chunk in active_chunks.values():
+		update_chunk_lod(chunk)
+		
+
+func get_lod_tiles(offset:Vector2):
+	var lenge = clamp(10 - offset.length()/20, 1, 10)
+	return Vector2(lenge,lenge)
+
+func update_chunk_lod(chunk):
+	var center_position = center_node.translation
+	var center_world:Vector2 = Vector2(center_position.x , center_position.z)
+	var chunk_center = Vector2(chunk.translation.x, chunk.translation.z) + chunk.size/2
+	var offset:Vector2 = center_world-chunk_center
+	var tilelings = get_lod_tiles(offset)
+
+	if (chunk.x_tiles != int(tilelings.x) or chunk.y_tiles != int(tilelings.y)):
+		chunk.x_tiles = int(tilelings.x)
+		chunk.y_tiles = int(tilelings.y)
+		chunk.create_mash()
